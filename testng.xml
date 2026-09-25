@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Storefront Automation Suite" verbose="2">
+    
+    <listeners>
+        <listener class-name="com.rakshalokam.utils.TestListener" />
+    </listeners> 
+
+    <!-- 1. Automated Core Regression (Runs fully unattended) -->
+    <test name="E-Commerce Core Regressions">
+        <classes>
+            <class name="com.rakshalokam.tests.SearchAndFilterTest" />
+            <class name="com.rakshalokam.tests.CartOperationsTest" />
+            <class name="com.rakshalokam.tests.RazorpayPaymentPlaywrightTest" />
+            <class name="com.rakshalokam.tests.CheckoutFlowTest" />
+        </classes>
+    </test>
+
+    <!-- 
+    Temporarily disabled until OTP rate limit resets:
+    <test name="Authentication and Account Tests">
+        <classes>
+            <class name="com.rakshalokam.tests.SignInTest" />
+        </classes>
+    </test>
+    -->
+
+</suite>

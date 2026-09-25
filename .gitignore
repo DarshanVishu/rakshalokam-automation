@@ -1,0 +1,10 @@
+target/
+test-output/
+reports/
+.playwright/
+.settings/
+.project
+.classpath
+bin/
+*.class
+*.log

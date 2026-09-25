@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.rakshalokam</groupId>
+  <artifactId>rakshalokam-automation</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>rakshalokam-automation</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.release>17</maven.compiler.release>
+    
+    <!-- Testing Framework & Driver Versions -->
+    <selenium.version>4.21.0</selenium.version>
+    <testng.version>7.10.2</testng.version>
+    <webdrivermanager.version>5.8.0</webdrivermanager.version>
+    
+    <!-- API Testing (REST Assured + Serialization) -->
+    <rest-assured.version>5.4.0</rest-assured.version>
+    <jackson.version>2.17.1</jackson.version>
+    
+    <!-- Reporting & Test Data Utilities -->
+    <extentreports.version>5.1.1</extentreports.version>
+    <commons-io.version>2.16.1</commons-io.version>
+    <javafaker.version>1.0.2</javafaker.version>
+    <slf4j.version>2.0.13</slf4j.version>
+  </properties>
+
+  <dependencies>
+    <!-- ========================================== -->
+    <!-- 1. UI AUTOMATION (SELENIUM + DRIVER MGR)   -->
+    <!-- ========================================== -->
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>${selenium.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.github.bonigarcia</groupId>
+      <artifactId>webdrivermanager</artifactId>
+      <version>${webdrivermanager.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.microsoft.playwright</groupId>
+      <artifactId>playwright</artifactId>
+      <version>1.44.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- ========================================== -->
+    <!-- 2. TEST RUNNER (TESTNG)                    -->
+    <!-- ========================================== -->
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>${testng.version}</version>
+    </dependency>
+
+    <!-- ========================================== -->
+    <!-- 3. API TESTING (REST ASSURED)              -->
+    <!-- ========================================== -->
+    <!-- Core REST-Assured -->
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <version>${rest-assured.version}</version>
+    </dependency>
+
+    <!-- JSON Path parsing for response extraction -->
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>json-path</artifactId>
+      <version>${rest-assured.version}</version>
+    </dependency>
+
+    <!-- JSON Schema Validator (For contract assertion) -->
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>json-schema-validator</artifactId>
+      <version>${rest-assured.version}</version>
+    </dependency>
+
+    <!-- Jackson Databind (POJO Serialization / Deserialization) -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+
+    <!-- ========================================== -->
+    <!-- 4. E-COMMERCE UTILITIES & TEST DATA GEN    -->
+    <!-- ========================================== -->
+    <!-- Java Faker (Generates dynamic guest customer emails, addresses, phones) -->
+    <dependency>
+      <groupId>com.github.javafaker</groupId>
+      <artifactId>javafaker</artifactId>
+      <version>${javafaker.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.yaml</groupId>
+          <artifactId>snakeyaml</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- Commons IO (File utility for screenshots and attachments) -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
+    </dependency>
+
+    <!-- ========================================== -->
+    <!-- 5. REPORTING & LOGGING                     -->
+    <!-- ========================================== -->
+    <!-- ExtentReports for rich HTML test reports -->
+    <dependency>
+      <groupId>com.aventstack</groupId>
+      <artifactId>extentreports</artifactId>
+      <version>${extentreports.version}</version>
+    </dependency>
+
+    <!-- SLF4J (Unified logging bridge) -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+  </dependencies>
+  
+  
+
+  <build>
+    <plugins>
+      <!-- Compiler Plugin configured for Java 17 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <release>17</release>
+        </configuration>
+      </plugin>
+      
+      <!-- Surefire Plugin to execute TestNG suites via Maven CLI -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <suiteXmlFiles>
+            <suiteXmlFile>testng.xml</suiteXmlFile>
+          </suiteXmlFiles>
+          <rerunFailingTestsCount>1</rerunFailingTestsCount>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
