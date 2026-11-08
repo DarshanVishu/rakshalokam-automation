@@ -15,7 +15,7 @@ public class CartTrayPage {
     private final WebDriver driver;
     private final WebDriverWait wait;
 
-    // Resilient standard W3C locators (no CSS :has())
+    // Resilient standard W3C locators
     private final By cartToggleTrigger = By.xpath(
         "//header//button[contains(@aria-label, 'cart') or contains(@aria-label, 'Cart') or contains(@aria-label, 'bag') or contains(@aria-label, 'Bag')] | " +
         "//header//a[contains(@href, 'cart')] | " +
@@ -41,7 +41,30 @@ public class CartTrayPage {
     private final By cartItemsList = By.xpath(
         "//button[contains(@aria-label, 'Remove') or contains(., 'Remove')] | " +
         "//div[contains(@class, 'cart')]//li | " +
-        "//aside//ul/li"
+        "//aside//ul/li | " +
+        "//div[contains(@class, 'cart-item') or @data-testid='cart-item']"
+    );
+
+    private final By itemQuantityDisplay = By.xpath(
+        "//input[@type='number' or contains(@class, 'qty') or contains(@class, 'quantity')] | " +
+        "//span[contains(@class, 'qty') or contains(@class, 'quantity')] | " +
+        "//*[@data-testid='item-quantity' or @data-testid='cart-item-qty']"
+    );
+
+    private final By plusButton = By.xpath(
+        "//button[contains(@aria-label, 'Increase') or contains(@aria-label, 'increase') or contains(@class, 'plus') or text()='+'] | " +
+        "//*[@data-testid='increase-quantity']"
+    );
+
+    private final By minusButton = By.xpath(
+        "//button[contains(@aria-label, 'Decrease') or contains(@aria-label, 'decrease') or contains(@class, 'minus') or text()='-'] | " +
+        "//*[@data-testid='decrease-quantity']"
+    );
+
+    private final By subtotalDisplay = By.xpath(
+        "//*[contains(@class, 'subtotal') or contains(@class, 'total')]//span[contains(text(), '₹')] | " +
+        "//*[@data-testid='cart-subtotal'] | " +
+        "//*[contains(text(), 'Subtotal')]/following-sibling::*"
     );
 
     public CartTrayPage(WebDriver driver) {
@@ -50,11 +73,9 @@ public class CartTrayPage {
     }
 
     /**
-     * Ensures the cart drawer is open. If it automatically opened upon add-to-cart,
-     * this avoids clicking obscured header icons.
+     * Ensures the cart drawer is open.
      */
     public void openDrawer() {
-        // If checkout or remove buttons are already visible, drawer opened automatically
         if (isCartDrawerOpen()) {
             return;
         }
@@ -64,7 +85,6 @@ public class CartTrayPage {
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true); arguments[0].click();", trigger);
             Thread.sleep(800);
         } catch (Exception e) {
-            // Fallback: click the last button inside header
             try {
                 WebElement fallbackBtn = driver.findElement(By.xpath("//header//button[last()]"));
                 ((JavascriptExecutor) driver).executeScript("arguments[0].click();", fallbackBtn);
@@ -95,7 +115,25 @@ public class CartTrayPage {
     }
 
     /**
-     * Returns total item count in the active drawer.
+     * Reads the current quantity of the first item line in the cart tray.
+     */
+    public int getItemQuantity() {
+        try {
+            WebElement qtyElem = wait.until(ExpectedConditions.presenceOfElementLocated(itemQuantityDisplay));
+            String value = qtyElem.getAttribute("value");
+            if (value == null || value.trim().isEmpty()) {
+                value = qtyElem.getText().trim();
+            }
+            value = value.replaceAll("[^0-9]", "");
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            System.err.println("Could not parse quantity from cart drawer: " + e.getMessage());
+            return 1;
+        }
+    }
+
+    /**
+     * Returns total distinct item count in the active drawer.
      */
     public int getCartItemCount() {
         try {
@@ -103,6 +141,43 @@ public class CartTrayPage {
             return items.size();
         } catch (Exception ignored) {
             return 0;
+        }
+    }
+
+    /**
+     * Clicks the '+' stepper inside the cart drawer to increase item count.
+     */
+    public void incrementItemQuantity() {
+        WebElement plus = wait.until(ExpectedConditions.elementToBeClickable(plusButton));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", plus);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Clicks the '-' stepper inside the cart drawer to decrease item count.
+     */
+    public void decrementItemQuantity() {
+        WebElement minus = wait.until(ExpectedConditions.elementToBeClickable(minusButton));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", minus);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Reads current subtotal string from cart drawer.
+     */
+    public String getSubtotalText() {
+        try {
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(subtotalDisplay)).getText().trim();
+        } catch (Exception e) {
+            return "";
         }
     }
 
