@@ -27,9 +27,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y xvfb google-chrome-stable
 
-      - name: Install Playwright Browsers and System Dependencies
+      - name: Install Playwright Chromium Browser
         run: |
-          mvn test-compile exec:java -e -Dexec.classpathScope=test -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps chromium"
+          mvn test-compile exec:java -e -Dexec.classpathScope=test -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install chromium"
 
       - name: Prepare CI config.properties
         run: |
