@@ -24,15 +24,16 @@ public class VendureShopApiTest extends BaseApiTest {
     @Test(priority = 2, description = "Verify collections route loader delivers catalog category data")
     public void testGetCollectionsRouteData() {
         given()
-            .spec(storefrontApiSpec)
-            .queryParam("_data", "routes/collections")
-        .when()
-            .get("/collections")
-        .then()
-            .statusCode(200)
-            .header("x-remix-response", equalTo("yes"))
-            .contentType(containsString("application/json"));
+                .spec(storefrontApiSpec)
+                .queryParam("_data", "routes/collections.$slug")
+                .when()
+                .get("/collections/rudrakshi")
+                .then()
+                .statusCode(200)
+                .header("x-remix-response", equalTo("yes"))
+                .contentType(containsString("application/json"));
     }
+
 
     @Test(priority = 3, description = "Verify product detail route loader returns valid product data")
     public void testGetProductDetailData() {

@@ -29,16 +29,32 @@ jobs:
 
       - name: Install Playwright Browsers and System Dependencies
         run: |
-          mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps chromium" || true
+          mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps chromium"
+
+      - name: Prepare CI config.properties
+        run: |
+          mkdir -p src/test/resources
+          cat <<EOF > src/test/resources/config.properties
+          baseUrl=https://rakshalokam.in
+          browser=chrome
+          headless=true
+          explicitTimeout=20
+          test.session.cookie=${{ secrets.RAKSHALOKAM_SESSION_COOKIE }}
+          EOF
 
       - name: Run Test Suite with Virtual Display
         run: |
-          xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" mvn clean test
+          xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" mvn clean test \
+            -DsuiteXmlFile=testng.xml \
+            -Dheadless=true \
+            -Dtest.session.cookie="${{ secrets.RAKSHALOKAM_SESSION_COOKIE }}"
 
       - name: Upload Test Reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: surefire-reports
-          path: target/surefire-reports/
+          name: test-execution-reports
+          path: |
+            target/surefire-reports/
+            test-output/
           retention-days: 7

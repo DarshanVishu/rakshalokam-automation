@@ -8,3 +8,5 @@ reports/
 bin/
 *.class
 *.log
+src/test/resources/config.properties
+.idea/
