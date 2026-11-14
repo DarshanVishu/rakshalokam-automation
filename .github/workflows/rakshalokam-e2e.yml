@@ -29,7 +29,7 @@ jobs:
 
       - name: Install Playwright Browsers and System Dependencies
         run: |
-          mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps chromium"
+          mvn test-compile exec:java -e -Dexec.classpathScope=test -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps chromium"
 
       - name: Prepare CI config.properties
         run: |
