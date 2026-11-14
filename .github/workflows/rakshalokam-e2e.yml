@@ -32,22 +32,24 @@ jobs:
           mvn test-compile exec:java -e -Dexec.classpathScope=test -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install chromium"
 
       - name: Prepare CI config.properties
+        env:
+          SESSION_COOKIE: ${{ secrets.RAKSHALOKAM_SESSION_COOKIE }}
         run: |
+          if [ -z "$SESSION_COOKIE" ]; then
+            echo "ERROR: RAKSHALOKAM_SESSION_COOKIE repository secret is missing or empty!"
+            exit 1
+          fi
           mkdir -p src/test/resources
-          cat <<EOF > src/test/resources/config.properties
-          baseUrl=https://rakshalokam.in
-          browser=chrome
-          headless=true
-          explicitTimeout=20
-          test.session.cookie=${{ secrets.RAKSHALOKAM_SESSION_COOKIE }}
-          EOF
+          printf "baseUrl=https://rakshalokam.in\nbrowser=chrome\nheadless=true\nexplicitTimeout=20\ntest.session.cookie=%s\n" "$SESSION_COOKIE" > src/test/resources/config.properties
 
       - name: Run Test Suite with Virtual Display
+        env:
+          SESSION_COOKIE: ${{ secrets.RAKSHALOKAM_SESSION_COOKIE }}
         run: |
           xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" mvn clean test \
             -DsuiteXmlFile=testng.xml \
             -Dheadless=true \
-            -Dtest.session.cookie="${{ secrets.RAKSHALOKAM_SESSION_COOKIE }}"
+            -Dtest.session.cookie="$SESSION_COOKIE"
 
       - name: Upload Test Reports
         if: always()
