@@ -175,7 +175,7 @@ Every push or pull request to `main` triggers `.github/workflows/regression.yml`
 
 ## Author
 
-**Darsh** — QA Automation & Platform Engineer
+**Darshan Vishu** — QA Automation | Software Development Engineer in Test - SDET
 
 * GitHub: [@DarshanVishu](https://github.com/DarshanVishu)
 
