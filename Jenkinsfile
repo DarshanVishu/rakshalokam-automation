@@ -15,14 +15,16 @@ pipeline {
 
         stage('Run Automation Suite') {
             steps {
-                bat 'mvn clean test -DsuiteXmlFile=testng.xml'
+                withCredentials([string(credentialsId: 'RAKSHALOKAM_SESSION_COOKIE', variable: 'SESSION_COOKIE')]) {
+                    bat 'mvn clean test -DsuiteXmlFile=testng.xml -Dtest.session.cookie=%SESSION_COOKIE%'
+                }
             }
         }
     }
 
     post {
         always {
-            archiveArtifacts artifacts: '**/ExtentReport*.html, test-output/**/*', allowEmptyArchive: true
+            archiveArtifacts artifacts: '**/ExtentReport*.html, test-output/**/*, target/surefire-reports/**/*', allowEmptyArchive: true
         }
     }
 }
