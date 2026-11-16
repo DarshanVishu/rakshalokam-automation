@@ -1,118 +1,186 @@
-### `README.md` for `rakshalokam-automation`
+# RakshaLokam E-Commerce Test Automation Framework
 
-Copy and paste this into the root `README.md` of your **`rakshalokam-automation`** repository. It matches your exact `pom.xml` dependencies (Java 17, Selenium 4.21, Playwright 1.44, TestNG 7.10, REST Assured 5.4, Jackson, JavaFaker, and ExtentReports).
+![Java](https://img.shields.io/badge/Java-17-orange?logo=openjdk)
+![Playwright](https://img.shields.io/badge/Playwright-1.50.0-2EAD33?logo=playwright)
+![Selenium](https://img.shields.io/badge/Selenium-4.x-43B02A?logo=selenium)
+![REST Assured](https://img.shields.io/badge/REST_Assured-5.x-009688)
+![TestNG](https://img.shields.io/badge/TestNG-7.9.0-red)
+![Allure Report](https://img.shields.io/badge/Allure-2.26.0-yellow)
+![CI/CD](https://img.shields.io/badge/GitHub_Actions-Automated-2088FF?logo=githubactions)
 
-```markdown
-# Rakshalokam E-Commerce Test Automation Framework
-
-An end-to-end hybrid test automation framework built with **Java 17**, **Selenium WebDriver**, **REST Assured**, and **TestNG** to validate storefront UI journeys and backend REST APIs for the Rakshalokam e-commerce platform.
-
----
-
-## 🛠️ Tech Stack & Versions
-
-| Layer | Technology / Library | Version |
-| :--- | :--- | :--- |
-| **Language** | Java (JDK) | `17` |
-| **UI Automation** | Selenium WebDriver / Playwright | `4.21.0` / `1.44.0` |
-| **API Testing** | REST Assured & JSON Schema Validator | `5.4.0` |
-| **Serialization** | Jackson Databind (POJO) | `2.17.1` |
-| **Test Runner** | TestNG & Maven Surefire | `7.10.2` / `3.3.0` |
-| **Test Data** | JavaFaker | `1.0.2` |
-| **Reporting & Logging** | ExtentReports & SLF4J | `5.1.1` / `2.0.13` |
-| **CI/CD** | Jenkins / GitHub Actions | — |
+An enterprise-grade, modular **Hybrid Test Automation Framework** built for the **RakshaLokam E-Commerce Platform**. Designed for end-to-end quality coverage across **Desktop Web, Mobile Safari (iOS WebKit), and REST APIs**, with parallel execution, automatic failure tracing, and live Allure reporting via GitHub Actions.
 
 ---
 
-## 🏗️ Framework Architecture
+## Key Highlights
+
+- **Multi-Engine Web & Mobile Architecture:** Supports Chromium/Chrome desktop execution alongside emulated **iOS Safari (WebKit)** mobile viewport testing (`393x852`, touch gestures, subpixel overflow detection) to catch mobile checkout and layout regressions early.
+- **End-to-End E-Commerce Coverage:** Validates product discovery, search & filtering, variant selection, cart persistence, guest/authenticated checkout flows, payment gateway callbacks, and order history.
+- **API & UI Hybrid Validation:** Combines **REST Assured** API checks (inventory stock, pricing/discount rules, cart totals, order creation payloads) with UI assertions for faster, deterministic test runs.
+- **Failure Diagnostics & Observability:** Captures Playwright traces, failure screenshots, API request/response logs, and Surefire reports attached directly to **Allure Reports**.
+- **CI/CD Ready:** Pre-configured **GitHub Actions** pipeline supporting scheduled runs, PR checks, suite selection via `workflow_dispatch`, and automated **GitHub Pages** report publishing.
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+| :--- | :--- |
+| **Language & Build** | Java 17, Apache Maven |
+| **UI & Mobile Web** | Playwright Java (`1.50.0`), Selenium WebDriver (`4.x`) |
+| **API Testing** | REST Assured (`5.x`), Jackson Databind |
+| **Test Runner** | TestNG (`7.9.0`) with XML Suite Routing & Parallel Threading |
+| **Data-Driven Testing** | Apache POI (`.xlsx`/`.xls`), JSON & Property Configs |
+| **Reporting** | Allure TestNG & Allure Maven (`2.26.0`) |
+| **CI/CD & Hosting** | GitHub Actions (`ubuntu-24.04`), GitHub Pages |
+
+---
+
+## Project Architecture
 
 ```text
-rakshalokam-automation/
+RakshaLokam-Automation/
+├── .github/
+│   └── workflows/
+│       └── regression.yml                 # CI/CD pipeline (Desktop, iOS WebKit, Allure Pages)
 ├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   ├── base/          # WebDriver initialization (ThreadLocal) & BaseTest setup
-│   │   │   ├── pages/         # Page Object Model (POM) classes for Storefront & Checkout
-│   │   │   ├── pojo/          # Request/Response POJOs for Jackson serialization
-│   │   │   └── utils/         # ConfigReader, Screenshot utilities, ExtentReport manager
-│   │   └── resources/
-│   │       └── config.properties
+│   ├── main/java/com/rakshalokam/automation/
+│   │   ├── core/
+│   │   │   ├── constants/                 # Timeouts, URLs, environment constants
+│   │   │   └── utils/                     # Excel readers, JSON parsers, retry & wait helpers
+│   │   ├── drivers/
+│   │   │   ├── capabilities/              # Browser & iOS Safari WebKit device profiles
+│   │   │   ├── factory/                   # TargetEngine & DriverFactory routing
+│   │   │   └── managers/                  # ThreadLocal Playwright & WebDriver lifecycle
+│   │   ├── pages/                         # Page Object Model (Home, PLP, PDP, Cart, Checkout)
+│   │   └── api/                           # REST Assured specs, endpoints & POJO models
 │   └── test/
-│       └── java/
-│           ├── api/           # REST Assured contract, payload, and status assertions
-│           ├── listeners/     # TestNG ITestListener & IRetryAnalyzer implementations
-│           └── ui/            # End-to-end storefront, cart, coupon, and checkout tests
-├── testng.xml                 # TestNG suite execution configuration
-└── pom.xml                    # Maven dependencies & Surefire build plugins
+│       ├── java/com/rakshalokam/automation/tests/
+│       │   ├── web/                       # Desktop E2E & smoke regression suites
+│       │   ├── mobile/                    # iOS Safari (WebKit) responsive & touch tests
+│       │   ├── api/                       # Catalog, Cart, Pricing & Order API tests
+│       │   └── e2e/                       # Cross-layer UI + API order lifecycle flows
+│       └── resources/
+│           ├── testng-web.xml             # Desktop Web regression suite
+│           ├── testng-ios.xml             # iOS Safari mobile web suite
+│           ├── testng-api.xml             # REST API validation suite
+│           ├── testng-e2e.xml             # Full checkout E2E suite
+│           └── testng-all.xml             # Master full-regression suite
+└── pom.xml
 
 ```
 
 ---
 
-## ✨ Key Framework Capabilities
+## Automated Test Coverage
 
-* **Hybrid UI + API Coverage:** Combines browser-level storefront validation with fast API contract and schema assertions.
-* **Thread-Safe Parallel Execution:** Uses `ThreadLocal<WebDriver>` to isolate browser sessions during concurrent TestNG suite runs.
-* **Dynamic Test Data Generation:** Integrates `JavaFaker` to generate unique guest user profiles, shipping addresses, and contact details on every run.
-* **Automatic Retry Mechanism:** Configured with Maven Surefire (`rerunFailingTestsCount=1`) and TestNG retry listeners to handle transient network/UI flakiness.
-* **Rich HTML Execution Reports:** Generates interactive **ExtentReports** with failure screenshots attached automatically via `Commons IO`.
+### 1. Storefront & Catalog (`web` & `mobile`)
+
+* Homepage hero banners, category navigation, and predictive search.
+* Product Listing Page (PLP) sorting, price-range filters, and pagination.
+* Product Detail Page (PDP) size/variant selection, stock badges, and image gallery swipe/zoom.
+
+### 2. Cart & Checkout Flow (`e2e`)
+
+* Add-to-cart, quantity updates, coupon/promo code discount calculation, and tax/shipping totals.
+* Guest-to-registered user cart merge across session reloads.
+* Address validation, payment method selection, and order confirmation ID verification.
+
+### 3. Mobile Safari / Responsive Web (`mobile`)
+
+* Hamburger drawer navigation, sticky Add-to-Cart bar visibility, and touch dropdown selection on WebKit.
+* Viewport integrity checks preventing horizontal overflow and iOS input auto-zoom (`font-size >= 16px`).
+
+### 4. Backend & Pricing Engine (`api`)
+
+* Schema validation, HTTP status checks, and response SLA assertions across catalog, cart, and order endpoints.
+* Boundary & negative testing for invalid coupons, out-of-stock SKUs, and unauthorized order access.
 
 ---
 
-## 🚀 Prerequisites & Local Execution
+## Getting Started
 
 ### Prerequisites
 
-* **JDK 17** installed and configured in `JAVA_HOME`
+* **Java JDK 17+**
 * **Apache Maven 3.8+**
-* **Chrome / Edge** browser installed (managed automatically via `WebDriverManager 5.8.0`)
+* **Git**
 
-### Run Tests via CLI
+### 1. Clone the Repository
 
-1. **Clone the repository:**
 ```bash
-git clone [https://github.com/DarshanVishu/rakshalokam-automation.git](https://github.com/DarshanVishu/rakshalokam-automation.git)
-cd rakshalokam-automation
+git clone [https://github.com/DarshanVishu/RakshaLokam-Automation.git](https://github.com/DarshanVishu/RakshaLokam-Automation.git)
+cd RakshaLokam-Automation
 
 ```
 
+### 2. Install Playwright Browsers (First-Time Setup)
 
-2. **Execute the default TestNG suite:**
 ```bash
-mvn clean test
+mvn test-compile exec:java -e \
+  -Dexec.classpathScope=test \
+  -Dexec.mainClass=com.microsoft.playwright.CLI \
+  -Dexec.args="install webkit chromium"
 
 ```
 
+### 3. Run Test Suites Locally
 
-3. **Execute a specific TestNG suite file:**
+**Run Desktop Web Suite (Headless):**
+
 ```bash
-mvn clean test -DsuiteXmlFile=testng.xml
+mvn clean test -DsuiteXmlFile=src/test/resources/testng-web.xml -Dheadless=true
 
 ```
 
+**Run iOS Safari (WebKit) Mobile Suite:**
 
+```bash
+mvn test -DsuiteXmlFile=src/test/resources/testng-ios.xml -Dheadless=true
+
+```
+
+**Run API Regression Suite:**
+
+```bash
+mvn test -DsuiteXmlFile=src/test/resources/testng-api.xml
+
+```
+
+**Run Full Master Regression:**
+
+```bash
+mvn clean test -DsuiteXmlFile=src/test/resources/testng-all.xml -Dheadless=true
+
+```
+
+### 4. Generate & View Allure Report
+
+```bash
+mvn allure:serve
+
+```
 
 ---
 
-## 📊 Test Execution Reports
+## CI/CD Pipeline (GitHub Actions)
 
-After execution completes, open the generated ExtentReport HTML file in your browser:
+Every push or pull request to `main` triggers `.github/workflows/regression.yml`:
 
-```text
-/test-output/ExtentReport.html
-
-```
-
-```
+1. **Desktop Regression Job:** Executes `testng-web.xml` in headless mode on Linux.
+2. **iOS Safari Mobile Job:** Provisions WebKit on `ubuntu-24.04` and runs `testng-ios.xml` with trace capture enabled on failure.
+3. **Combined Allure Deployment:** Merges desktop and mobile execution artifacts and publishes a unified interactive report to **GitHub Pages**.
 
 ---
 
-### Quick Setup Steps on GitHub
-1. Open your **`rakshalokam-automation`** repository on GitHub.
-2. Click **Add a README** (or edit your existing `README.md`).
-3. Paste the markdown above and adjust the folder names under `src/` if your actual package names differ slightly.
-4. Commit with message: `docs: add comprehensive framework architecture README`.
+## Author
 
-Would you like to create a Jenkins Pipeline (`Jenkinsfile`) for this project next so you can run `mvn clean test` directly from the Jenkins server you just installed?
+**Darsh** — QA Automation & Platform Engineer
+
+* GitHub: [@DarshanVishu](https://github.com/DarshanVishu)
+
+```
+
+If you want to customize any badges, live GitHub Pages URL, specific RakshaLokam modules (such as loyalty points, vendor portal, or Razorpay/UPI sandbox flows), or package names to match your exact repo structure, let me know and I will update it.
 
 ```
