@@ -10,3 +10,5 @@ bin/
 *.log
 src/test/resources/config.properties
 .idea/
+
+performance/results/

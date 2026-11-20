@@ -1,0 +1,41 @@
+﻿pipeline {
+    agent any
+
+    parameters {
+        string(name: 'HOST', defaultValue: 'rakshalokam.in', description: 'Target host (use staging for higher concurrency)')
+        string(name: 'USERS', defaultValue: '5', description: 'Concurrent virtual users')
+        string(name: 'RAMPUP', defaultValue: '15', description: 'Ramp-up period in seconds')
+        string(name: 'LOOPS', defaultValue: '3', description: 'Loops per virtual user')
+    }
+
+    stages {
+        stage('Clean Results') {
+            steps {
+                powershell '''
+                    if (Test-Path performance/results) { Remove-Item -Recurse -Force performance/results }
+                    New-Item -ItemType Directory -Force -Path performance/results | Out-Null
+                '''
+            }
+        }
+
+        stage('Execute JMeter Load Test') {
+            steps {
+                powershell """
+                    jmeter -n -t "performance/rakshalokam-load.jmx" `
+                        "-Jhost=${params.HOST}" `
+                        "-Jusers=${params.USERS}" `
+                        "-Jrampup=${params.RAMPUP}" `
+                        "-Jloops=${params.LOOPS}" `
+                        -l "performance/results/results.jtl" `
+                        -e -o "performance/results/html-report"
+                """
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'performance/results/results.jtl, performance/results/html-report/**', allowEmptyArchive: true
+        }
+    }
+}
